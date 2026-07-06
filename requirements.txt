@@ -5,7 +5,5 @@ seaborn
 matplotlib
 imbalanced-learn
 scikit-learn
-catboost
-xgboost
 Flask
 #-e .
