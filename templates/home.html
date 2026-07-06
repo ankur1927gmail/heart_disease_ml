@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heart Disease Prediction</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        .info-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        .info-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .info-card {
+            background: white;
+            padding: 15px;
+            border-left: 4px solid #667eea;
+            border-radius: 5px;
+        }
+        .info-card h4 {
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+        .info-card p {
+            color: #666;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+        .form-section {
+            padding: 40px;
+        }
+        .form-section h2 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 1.5em;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .form-group label {
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+        .form-group input,
+        .form-group select {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        .form-group input::placeholder {
+            color: #999;
+        }
+        .help-text {
+            font-size: 0.85em;
+            color: #666;
+            margin-top: 5px;
+            font-style: italic;
+        }
+        .button-section {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 40px;
+            padding: 0 40px 40px 40px;
+        }
+        .btn {
+            padding: 14px 40px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        .btn-reset {
+            background: #f0f0f0;
+            color: #333;
+        }
+        .btn-reset:hover {
+            background: #e0e0e0;
+        }
+        .results-section {
+            background: #f0f7ff;
+            padding: 30px 40px;
+            border-top: 2px solid #667eea;
+            text-align: center;
+            display: none;
+        }
+        .results-section.show {
+            display: block;
+        }
+        .results-section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        .prediction-result {
+            font-size: 1.5em;
+            color: #333;
+            font-weight: 600;
+            padding: 20px;
+            background: white;
+            border-radius: 5px;
+            border-left: 5px solid #667eea;
+        }
+        .risk-level {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 5px;
+            font-weight: 600;
+        }
+        .risk-level.level-0 {
+            background: #d4edda;
+            color: #155724;
+        }
+        .risk-level.level-1 {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .risk-level.level-2 {
+            background: #ffe5e5;
+            color: #721c24;
+        }
+        .risk-level.level-3 {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .risk-level.level-4 {
+            background: #f5c6cb;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>❤️ Heart Disease Prediction System</h1>
+            <p>Enter your medical data to predict heart disease risk</p>
+        </div>
+
+        <!-- Information Section -->
+        <div class="info-section">
+            <h2>📋 Feature Information Guide</h2>
+            <div class="info-grid">
+                <div class="info-card">
+                    <h4>Sex</h4>
+                    <p>0 = Female | 1 = Male</p>
+                </div>
+                <div class="info-card">
+                    <h4>Chest Pain Type (cp)</h4>
+                    <p>1 = Typical Angina | 2 = Atypical Angina | 3 = Non-anginal | 4 = Asymptomatic</p>
+                </div>
+                <div class="info-card">
+                    <h4>Fasting Blood Sugar (fbs)</h4>
+                    <p>0 = ≤ 120 mg/dl | 1 = > 120 mg/dl</p>
+                </div>
+                <div class="info-card">
+                    <h4>Resting ECG (restecg)</h4>
+                    <p>0 = Normal | 1 = ST-T Abnormality | 2 = LV Hypertrophy</p>
+                </div>
+                <div class="info-card">
+                    <h4>Exercise Angina (exang)</h4>
+                    <p>0 = No | 1 = Yes</p>
+                </div>
+                <div class="info-card">
+                    <h4>ST Slope</h4>
+                    <p>1 = Upsloping | 2 = Flat | 3 = Downsloping</p>
+                </div>
+                <div class="info-card">
+                    <h4>Major Vessels (ca)</h4>
+                    <p>0 = None | 1 = One | 2 = Two | 3 = Three</p>
+                </div>
+                <div class="info-card">
+                    <h4>Thalassemia (thal)</h4>
+                    <p>3 = Normal | 6 = Fixed Defect | 7 = Reversible Defect</p>
+                </div>
+                <div class="info-card">
+                    <h4>Prediction Output (num)</h4>
+                    <p>0 = No Disease | 1 = Mild | 2 = Moderate | 3 = Significant | 4 = Severe</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Section -->
+        <div class="form-section">
+            <h2>Enter Your Medical Data</h2>
+            <form action="{{ url_for('predict_datapoint')}}" method="post">
+                <div class="form-grid">
+                    <!-- Age -->
+                    <div class="form-group">
+                        <label for="age">Age (years)</label>
+                        <input type="number" id="age" name="age" min="1" max="120" required>
+                        <span class="help-text">Range: 1-120 years</span>
+                    </div>
+
+                    <!-- Sex -->
+                    <div class="form-group">
+                        <label for="sex">Sex</label>
+                        <select id="sex" name="sex" required>
+                            <option value="">Select Gender</option>
+                            <option value="0">Female (0)</option>
+                            <option value="1">Male (1)</option>
+                        </select>
+                    </div>
+
+                    <!-- Chest Pain Type -->
+                    <div class="form-group">
+                        <label for="cp">Chest Pain Type</label>
+                        <select id="cp" name="cp" required>
+                            <option value="">Select Type</option>
+                            <option value="1">Typical Angina (1)</option>
+                            <option value="2">Atypical Angina (2)</option>
+                            <option value="3">Non-anginal Pain (3)</option>
+                            <option value="4">Asymptomatic (4)</option>
+                        </select>
+                    </div>
+
+                    <!-- Resting Blood Pressure -->
+                    <div class="form-group">
+                        <label for="trestbps">Resting Blood Pressure (mm Hg)</label>
+                        <input type="number" id="trestbps" name="trestbps" min="0" max="300" required>
+                        <span class="help-text">Typical: 90-180 mm Hg</span>
+                    </div>
+
+                    <!-- Serum Cholesterol -->
+                    <div class="form-group">
+                        <label for="chol">Serum Cholesterol (mg/dl)</label>
+                        <input type="number" id="chol" name="chol" min="0" max="600" required>
+                        <span class="help-text">Typical: 125-200 mg/dl</span>
+                    </div>
+
+                    <!-- Fasting Blood Sugar -->
+                    <div class="form-group">
+                        <label for="fbs">Fasting Blood Sugar > 120 mg/dl</label>
+                        <select id="fbs" name="fbs" required>
+                            <option value="">Select Value</option>
+                            <option value="0">No (0)</option>
+                            <option value="1">Yes (1)</option>
+                        </select>
+                    </div>
+
+                    <!-- Resting Electrocardiographic Results -->
+                    <div class="form-group">
+                        <label for="restecg">Resting ECG Results</label>
+                        <select id="restecg" name="restecg" required>
+                            <option value="">Select Result</option>
+                            <option value="0">Normal (0)</option>
+                            <option value="1">ST-T Abnormality (1)</option>
+                            <option value="2">LV Hypertrophy (2)</option>
+                        </select>
+                    </div>
+
+                    <!-- Maximum Heart Rate -->
+                    <div class="form-group">
+                        <label for="thalach">Maximum Heart Rate Achieved</label>
+                        <input type="number" id="thalach" name="thalach" min="0" max="250" required>
+                        <span class="help-text">Typical: 60-200 bpm</span>
+                    </div>
+
+                    <!-- Exercise Induced Angina -->
+                    <div class="form-group">
+                        <label for="exang">Exercise Induced Angina</label>
+                        <select id="exang" name="exang" required>
+                            <option value="">Select Value</option>
+                            <option value="0">No (0)</option>
+                            <option value="1">Yes (1)</option>
+                        </select>
+                    </div>
+
+                    <!-- ST Depression -->
+                    <div class="form-group">
+                        <label for="oldpeak">ST Depression Induced by Exercise</label>
+                        <input type="number" id="oldpeak" name="oldpeak" min="0" max="10" step="0.1" required>
+                        <span class="help-text">Relative to rest (0-10)</span>
+                    </div>
+
+                    <!-- ST Slope -->
+                    <div class="form-group">
+                        <label for="slope">ST Slope</label>
+                        <select id="slope" name="slope" required>
+                            <option value="">Select Slope</option>
+                            <option value="1">Upsloping (1)</option>
+                            <option value="2">Flat (2)</option>
+                            <option value="3">Downsloping (3)</option>
+                        </select>
+                    </div>
+
+                    <!-- Number of Major Vessels -->
+                    <div class="form-group">
+                        <label for="ca">Major Vessels Colored by Fluoroscopy</label>
+                        <select id="ca" name="ca" required>
+                            <option value="">Select Number</option>
+                            <option value="0">0 Vessels (0)</option>
+                            <option value="1">1 Vessel (1)</option>
+                            <option value="2">2 Vessels (2)</option>
+                            <option value="3">3 Vessels (3)</option>
+                        </select>
+                    </div>
+
+                    <!-- Thalassemia -->
+                    <div class="form-group">
+                        <label for="thal">Thalassemia (Thal)</label>
+                        <select id="thal" name="thal" required>
+                            <option value="">Select Type</option>
+                            <option value="3">Normal (3)</option>
+                            <option value="6">Fixed Defect (6)</option>
+                            <option value="7">Reversible Defect (7)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Buttons -->
+                <div class="button-section">
+                    <button type="submit" class="btn btn-primary">🔍 Predict Heart Disease Risk</button>
+                    <button type="reset" class="btn btn-reset">🔄 Clear Form</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Results Section -->
+        {% if results %}
+        <div class="results-section show">
+            <h2>📊 Prediction Result</h2>
+            <div class="prediction-result">
+                Predicted Heart Disease Stage: {{ results }}
+            </div>
+            <div class="risk-level {% if results == 0 %}level-0{% elif results == 1 %}level-1{% elif results == 2 %}level-2{% elif results == 3 %}level-3{% else %}level-4{% endif %}">
+                {% if results == 0 %}
+                    ✅ No Heart Disease Detected
+                {% elif results == 1 %}
+                    ⚠️ Mild Heart Disease (Stage 1)
+                {% elif results == 2 %}
+                    ⚠️ Moderate Heart Disease (Stage 2)
+                {% elif results == 3 %}
+                    ❌ Significant Heart Disease (Stage 3)
+                {% elif results == 4 %}
+                    🚨 Severe Heart Disease (Stage 4)
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
