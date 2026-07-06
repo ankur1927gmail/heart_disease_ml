@@ -123,6 +123,122 @@
             margin-top: 40px;
             padding: 0 40px 40px 40px;
         }
+        .tab-menu {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 30px 0 0;
+            padding: 0 30px;
+        }
+        .tab-button {
+            background: #f4f6ff;
+            color: #333;
+            border: 2px solid transparent;
+            padding: 12px 22px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+        .tab-button.active,
+        .tab-button:hover {
+            background: #667eea;
+            color: white;
+            border-color: #4f5ed3;
+        }
+        .tab-panel {
+            display: none;
+        }
+        .tab-panel.active {
+            display: block;
+        }
+        .bulk-section {
+            padding: 30px 40px 40px 40px;
+        }
+        .bulk-upload {
+            background: #f8f9ff;
+            border: 1px solid #e5e8ff;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        .bulk-info-section {
+            margin-bottom: 25px;
+            background: #e8f0ff;
+            border: 1px solid #c7d9ff;
+            border-radius: 12px;
+            padding: 20px;
+            color: #1f3264;
+            font-size: 0.95em;
+            line-height: 1.7;
+        }
+        .bulk-info-section h3 {
+            margin-bottom: 14px;
+            color: #1f3264;
+            font-size: 1.2em;
+        }
+        .bulk-info-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .bulk-info-list li {
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(31, 50, 100, 0.12);
+        }
+        .bulk-info-list li:last-child {
+            border-bottom: none;
+        }
+        .bulk-info-list strong {
+            color: #1b2a56;
+        }
+        .bulk-upload label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .bulk-upload input[type="file"] {
+            display: block;
+            margin-top: 10px;
+        }
+        .bulk-details {
+            margin-top: 15px;
+            font-size: 0.95em;
+            color: #555;
+        }
+        .bulk-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            overflow-x: auto;
+        }
+        .bulk-table th,
+        .bulk-table td {
+            border: 1px solid #e0e4f2;
+            padding: 12px 10px;
+            text-align: left;
+        }
+        .bulk-table th {
+            background: #eef2ff;
+            color: #333;
+            font-weight: 700;
+        }
+        .bulk-table td {
+            background: white;
+            color: #444;
+        }
+        .error-message {
+            margin-top: 20px;
+            color: #b02a37;
+            font-weight: 700;
+            text-align: center;
+        }
+        .note {
+            margin-top: 6px;
+            font-size: 0.9em;
+            color: #666;
+        }
         .btn {
             padding: 14px 40px;
             font-size: 1.1em;
@@ -208,207 +324,298 @@
             <p>Enter your medical data to predict heart disease risk</p>
         </div>
 
-        <!-- Information Section -->
-        <div class="info-section">
-            <h2>📋 Feature Information Guide</h2>
-            <div class="info-grid">
-                <div class="info-card">
-                    <h4>Sex</h4>
-                    <p>0 = Female | 1 = Male</p>
-                </div>
-                <div class="info-card">
-                    <h4>Chest Pain Type (cp)</h4>
-                    <p>1 = Typical Angina | 2 = Atypical Angina | 3 = Non-anginal | 4 = Asymptomatic</p>
-                </div>
-                <div class="info-card">
-                    <h4>Fasting Blood Sugar (fbs)</h4>
-                    <p>0 = ≤ 120 mg/dl | 1 = > 120 mg/dl</p>
-                </div>
-                <div class="info-card">
-                    <h4>Resting ECG (restecg)</h4>
-                    <p>0 = Normal | 1 = ST-T Abnormality | 2 = LV Hypertrophy</p>
-                </div>
-                <div class="info-card">
-                    <h4>Exercise Angina (exang)</h4>
-                    <p>0 = No | 1 = Yes</p>
-                </div>
-                <div class="info-card">
-                    <h4>ST Slope</h4>
-                    <p>1 = Upsloping | 2 = Flat | 3 = Downsloping</p>
-                </div>
-                <div class="info-card">
-                    <h4>Major Vessels (ca)</h4>
-                    <p>0 = None | 1 = One | 2 = Two | 3 = Three</p>
-                </div>
-                <div class="info-card">
-                    <h4>Thalassemia (thal)</h4>
-                    <p>3 = Normal | 6 = Fixed Defect | 7 = Reversible Defect</p>
-                </div>
-                <div class="info-card">
-                    <h4>Prediction Output (num)</h4>
-                    <p>0 = No Disease | 1 = Mild | 2 = Moderate | 3 = Significant | 4 = Severe</p>
-                </div>
-            </div>
+        <div class="tab-menu">
+            <button class="tab-button {% if active_tab|default('predict1') == 'predict1' %}active{% endif %}" data-tab="predict1">Manual Prediction</button>
+            <button class="tab-button {% if active_tab == 'bulk_predict' %}active{% endif %}" data-tab="bulk_predict">Bulk Predict JSON</button>
         </div>
 
-        <!-- Form Section -->
-        <div class="form-section">
-            <h2>Enter Your Medical Data</h2>
-            <form action="{{ url_for('predict_datapoint')}}" method="post">
-                <div class="form-grid">
-                    <!-- Age -->
-                    <div class="form-group">
-                        <label for="age">Age (years)</label>
-                        <input type="number" id="age" name="age" min="1" max="120" required>
-                        <span class="help-text">Range: 1-120 years</span>
+        <div class="tab-panel {% if active_tab|default('predict1') == 'predict1' %}active{% endif %}" id="predict1-panel">
+            <div class="form-section">
+                <h2>Enter Your Medical Data</h2>
+                <form id="single-predict-form" action="{{ url_for('predict_datapoint') }}" method="post">
+                    <div class="form-grid">
+                        <!-- Age -->
+                        <div class="form-group">
+                            <label for="age">Age (years)</label>
+                            <input type="number" id="age" name="age" min="1" max="120" required>
+                            <span class="help-text">Range: 1-120 years</span>
+                        </div>
+
+                        <!-- Sex -->
+                        <div class="form-group">
+                            <label for="sex">Sex</label>
+                            <select id="sex" name="sex" required>
+                                <option value="">Select Gender</option>
+                                <option value="0">Female (0)</option>
+                                <option value="1">Male (1)</option>
+                            </select>
+                        </div>
+
+                        <!-- Chest Pain Type -->
+                        <div class="form-group">
+                            <label for="cp">Chest Pain Type</label>
+                            <select id="cp" name="cp" required>
+                                <option value="">Select Type</option>
+                                <option value="1">Typical Angina (1)</option>
+                                <option value="2">Atypical Angina (2)</option>
+                                <option value="3">Non-anginal Pain (3)</option>
+                                <option value="4">Asymptomatic (4)</option>
+                            </select>
+                        </div>
+
+                        <!-- Resting Blood Pressure -->
+                        <div class="form-group">
+                            <label for="trestbps">Resting Blood Pressure (mm Hg)</label>
+                            <input type="number" id="trestbps" name="trestbps" min="0" max="300" required>
+                            <span class="help-text">Typical: 90-180 mm Hg</span>
+                        </div>
+
+                        <!-- Serum Cholesterol -->
+                        <div class="form-group">
+                            <label for="chol">Serum Cholesterol (mg/dl)</label>
+                            <input type="number" id="chol" name="chol" min="0" max="600" required>
+                            <span class="help-text">Typical: 125-200 mg/dl</span>
+                        </div>
+
+                        <!-- Fasting Blood Sugar -->
+                        <div class="form-group">
+                            <label for="fbs">Fasting Blood Sugar > 120 mg/dl</label>
+                            <select id="fbs" name="fbs" required>
+                                <option value="">Select Value</option>
+                                <option value="0">No (0)</option>
+                                <option value="1">Yes (1)</option>
+                            </select>
+                        </div>
+
+                        <!-- Resting Electrocardiographic Results -->
+                        <div class="form-group">
+                            <label for="restecg">Resting ECG Results</label>
+                            <select id="restecg" name="restecg" required>
+                                <option value="">Select Result</option>
+                                <option value="0">Normal (0)</option>
+                                <option value="1">ST-T Abnormality (1)</option>
+                                <option value="2">LV Hypertrophy (2)</option>
+                            </select>
+                        </div>
+
+                        <!-- Maximum Heart Rate -->
+                        <div class="form-group">
+                            <label for="thalach">Maximum Heart Rate Achieved</label>
+                            <input type="number" id="thalach" name="thalach" min="0" max="250" required>
+                            <span class="help-text">Typical: 60-200 bpm</span>
+                        </div>
+
+                        <!-- Exercise Induced Angina -->
+                        <div class="form-group">
+                            <label for="exang">Exercise Induced Angina</label>
+                            <select id="exang" name="exang" required>
+                                <option value="">Select Value</option>
+                                <option value="0">No (0)</option>
+                                <option value="1">Yes (1)</option>
+                            </select>
+                        </div>
+
+                        <!-- ST Depression -->
+                        <div class="form-group">
+                            <label for="oldpeak">ST Depression Induced by Exercise</label>
+                            <input type="number" id="oldpeak" name="oldpeak" min="0" max="10" step="0.1" required>
+                            <span class="help-text">Relative to rest (0-10)</span>
+                        </div>
+
+                        <!-- ST Slope -->
+                        <div class="form-group">
+                            <label for="slope">ST Slope</label>
+                            <select id="slope" name="slope" required>
+                                <option value="">Select Slope</option>
+                                <option value="1">Upsloping (1)</option>
+                                <option value="2">Flat (2)</option>
+                                <option value="3">Downsloping (3)</option>
+                            </select>
+                        </div>
+
+                        <!-- Number of Major Vessels -->
+                        <div class="form-group">
+                            <label for="ca">Major Vessels Colored by Fluoroscopy</label>
+                            <select id="ca" name="ca" required>
+                                <option value="">Select Number</option>
+                                <option value="0">0 Vessels (0)</option>
+                                <option value="1">1 Vessel (1)</option>
+                                <option value="2">2 Vessels (2)</option>
+                                <option value="3">3 Vessels (3)</option>
+                            </select>
+                        </div>
+
+                        <!-- Thalassemia -->
+                        <div class="form-group">
+                            <label for="thal">Thalassemia (Thal)</label>
+                            <select id="thal" name="thal" required>
+                                <option value="">Select Type</option>
+                                <option value="3">Normal (3)</option>
+                                <option value="6">Fixed Defect (6)</option>
+                                <option value="7">Reversible Defect (7)</option>
+                            </select>
+                        </div>
                     </div>
 
-                    <!-- Sex -->
-                    <div class="form-group">
-                        <label for="sex">Sex</label>
-                        <select id="sex" name="sex" required>
-                            <option value="">Select Gender</option>
-                            <option value="0">Female (0)</option>
-                            <option value="1">Male (1)</option>
-                        </select>
+                    <!-- Buttons -->
+                    <div class="button-section">
+                        <button type="submit" class="btn btn-primary">🔍 Predict Heart Disease Risk</button>
+                        <button type="reset" class="btn btn-reset">🔄 Clear Form</button>
                     </div>
+                </form>
+            </div>
 
-                    <!-- Chest Pain Type -->
-                    <div class="form-group">
-                        <label for="cp">Chest Pain Type</label>
-                        <select id="cp" name="cp" required>
-                            <option value="">Select Type</option>
-                            <option value="1">Typical Angina (1)</option>
-                            <option value="2">Atypical Angina (2)</option>
-                            <option value="3">Non-anginal Pain (3)</option>
-                            <option value="4">Asymptomatic (4)</option>
-                        </select>
-                    </div>
-
-                    <!-- Resting Blood Pressure -->
-                    <div class="form-group">
-                        <label for="trestbps">Resting Blood Pressure (mm Hg)</label>
-                        <input type="number" id="trestbps" name="trestbps" min="0" max="300" required>
-                        <span class="help-text">Typical: 90-180 mm Hg</span>
-                    </div>
-
-                    <!-- Serum Cholesterol -->
-                    <div class="form-group">
-                        <label for="chol">Serum Cholesterol (mg/dl)</label>
-                        <input type="number" id="chol" name="chol" min="0" max="600" required>
-                        <span class="help-text">Typical: 125-200 mg/dl</span>
-                    </div>
-
-                    <!-- Fasting Blood Sugar -->
-                    <div class="form-group">
-                        <label for="fbs">Fasting Blood Sugar > 120 mg/dl</label>
-                        <select id="fbs" name="fbs" required>
-                            <option value="">Select Value</option>
-                            <option value="0">No (0)</option>
-                            <option value="1">Yes (1)</option>
-                        </select>
-                    </div>
-
-                    <!-- Resting Electrocardiographic Results -->
-                    <div class="form-group">
-                        <label for="restecg">Resting ECG Results</label>
-                        <select id="restecg" name="restecg" required>
-                            <option value="">Select Result</option>
-                            <option value="0">Normal (0)</option>
-                            <option value="1">ST-T Abnormality (1)</option>
-                            <option value="2">LV Hypertrophy (2)</option>
-                        </select>
-                    </div>
-
-                    <!-- Maximum Heart Rate -->
-                    <div class="form-group">
-                        <label for="thalach">Maximum Heart Rate Achieved</label>
-                        <input type="number" id="thalach" name="thalach" min="0" max="250" required>
-                        <span class="help-text">Typical: 60-200 bpm</span>
-                    </div>
-
-                    <!-- Exercise Induced Angina -->
-                    <div class="form-group">
-                        <label for="exang">Exercise Induced Angina</label>
-                        <select id="exang" name="exang" required>
-                            <option value="">Select Value</option>
-                            <option value="0">No (0)</option>
-                            <option value="1">Yes (1)</option>
-                        </select>
-                    </div>
-
-                    <!-- ST Depression -->
-                    <div class="form-group">
-                        <label for="oldpeak">ST Depression Induced by Exercise</label>
-                        <input type="number" id="oldpeak" name="oldpeak" min="0" max="10" step="0.1" required>
-                        <span class="help-text">Relative to rest (0-10)</span>
-                    </div>
-
-                    <!-- ST Slope -->
-                    <div class="form-group">
-                        <label for="slope">ST Slope</label>
-                        <select id="slope" name="slope" required>
-                            <option value="">Select Slope</option>
-                            <option value="1">Upsloping (1)</option>
-                            <option value="2">Flat (2)</option>
-                            <option value="3">Downsloping (3)</option>
-                        </select>
-                    </div>
-
-                    <!-- Number of Major Vessels -->
-                    <div class="form-group">
-                        <label for="ca">Major Vessels Colored by Fluoroscopy</label>
-                        <select id="ca" name="ca" required>
-                            <option value="">Select Number</option>
-                            <option value="0">0 Vessels (0)</option>
-                            <option value="1">1 Vessel (1)</option>
-                            <option value="2">2 Vessels (2)</option>
-                            <option value="3">3 Vessels (3)</option>
-                        </select>
-                    </div>
-
-                    <!-- Thalassemia -->
-                    <div class="form-group">
-                        <label for="thal">Thalassemia (Thal)</label>
-                        <select id="thal" name="thal" required>
-                            <option value="">Select Type</option>
-                            <option value="3">Normal (3)</option>
-                            <option value="6">Fixed Defect (6)</option>
-                            <option value="7">Reversible Defect (7)</option>
-                        </select>
-                    </div>
+            {% if results %}
+            <div class="results-section show">
+                <h2>📊 Prediction Result</h2>
+                <div class="prediction-result">
+                    Predicted Heart Disease Stage: {{ results }}
                 </div>
-
-                <!-- Buttons -->
-                <div class="button-section">
-                    <button type="submit" class="btn btn-primary">🔍 Predict Heart Disease Risk</button>
-                    <button type="reset" class="btn btn-reset">🔄 Clear Form</button>
+                <div class="risk-level {% if results == 0 %}level-0{% elif results == 1 %}level-1{% elif results == 2 %}level-2{% elif results == 3 %}level-3{% else %}level-4{% endif %}">
+                    {% if results == 0 %}
+                        ✅ No Heart Disease Detected
+                    {% elif results == 1 %}
+                        ⚠️ Mild Heart Disease (Stage 1)
+                    {% elif results == 2 %}
+                        ⚠️ Moderate Heart Disease (Stage 2)
+                    {% elif results == 3 %}
+                        ❌ Significant Heart Disease (Stage 3)
+                    {% elif results == 4 %}
+                        🚨 Severe Heart Disease (Stage 4)
+                    {% endif %}
                 </div>
-            </form>
+            </div>
+            {% endif %}
         </div>
 
-        <!-- Results Section -->
-        {% if results %}
-        <div class="results-section show">
-            <h2>📊 Prediction Result</h2>
-            <div class="prediction-result">
-                Predicted Heart Disease Stage: {{ results }}
-            </div>
-            <div class="risk-level {% if results == 0 %}level-0{% elif results == 1 %}level-1{% elif results == 2 %}level-2{% elif results == 3 %}level-3{% else %}level-4{% endif %}">
-                {% if results == 0 %}
-                    ✅ No Heart Disease Detected
-                {% elif results == 1 %}
-                    ⚠️ Mild Heart Disease (Stage 1)
-                {% elif results == 2 %}
-                    ⚠️ Moderate Heart Disease (Stage 2)
-                {% elif results == 3 %}
-                    ❌ Significant Heart Disease (Stage 3)
-                {% elif results == 4 %}
-                    🚨 Severe Heart Disease (Stage 4)
+        <div class="tab-panel {% if active_tab == 'bulk_predict' %}active{% endif %}" id="bulk_predict-panel">
+            <div class="bulk-section">
+                <div class="bulk-upload">
+                    <h2>Bulk Predict</h2>
+                    <div class="bulk-info-section">
+                        <h3>Feature Reference</h3>
+                        <ul class="bulk-info-list">
+                            <li><strong>age</strong> — Age in years</li>
+                            <li><strong>sex</strong> — 0 = Female | 1 = Male</li>
+                            <li><strong>cp</strong> — Chest pain type: 1 = Typical Angina, 2 = Atypical Angina, 3 = Non-anginal, 4 = Asymptomatic</li>
+                            <li><strong>trestbps</strong> — Resting blood pressure (mm Hg)</li>
+                            <li><strong>chol</strong> — Serum cholesterol (mg/dl)</li>
+                            <li><strong>fbs</strong> — Fasting blood sugar > 120 mg/dl: 0 = No, 1 = Yes</li>
+                            <li><strong>restecg</strong> — Resting ECG: 0 = Normal, 1 = ST-T Abnormality, 2 = LV Hypertrophy</li>
+                            <li><strong>thalach</strong> — Maximum heart rate achieved</li>
+                            <li><strong>exang</strong> — Exercise induced angina: 0 = No, 1 = Yes</li>
+                            <li><strong>oldpeak</strong> — ST depression induced by exercise relative to rest</li>
+                            <li><strong>slope</strong> — ST slope: 1 = Upsloping, 2 = Flat, 3 = Downsloping</li>
+                            <li><strong>ca</strong> — Number of major vessels (0-3) colored by fluoroscopy</li>
+                            <li><strong>thal</strong> — Thalassemia: 3 = Normal, 6 = Fixed Defect, 7 = Reversible Defect</li>
+                        </ul>
+                    </div>
+                    <form id="bulk-predict-form" action="{{ url_for('bulk_predict') }}" method="post" enctype="multipart/form-data">
+                        <label for="json_file">Upload JSON file</label>
+                        <input type="file" id="json_file" name="json_file" accept="application/json" required>
+                        <div class="note">Only JSON files are allowed, maximum size 200MB.</div>
+                        <div class="button-section" style="justify-content:flex-start; padding: 0;">
+                            <button type="submit" class="btn btn-primary">Predict from JSON</button>
+                            <button type="button" id="bulk-clear-btn" class="btn btn-reset">Clear Results</button>
+                        </div>
+                    </form>
+
+                    {% if bulk_filename %}
+                    <div class="bulk-details">
+                        <strong>File Used:</strong> {{ bulk_filename }}
+                    </div>
+                    {% endif %}
+
+                    {% if bulk_error %}
+                    <div class="error-message">{{ bulk_error }}</div>
+                    {% endif %}
+                </div>
+
+                {% if bulk_table and bulk_columns %}
+                <div class="bulk-details">
+                    Showing predictions for <strong>{{ bulk_filename }}</strong>
+                </div>
+                <div class="table-wrapper">
+                    <table class="bulk-table">
+                        <thead>
+                            <tr>
+                                {% for col in bulk_columns %}
+                                <th>{{ col }}</th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in bulk_table %}
+                            <tr>
+                                {% for col in bulk_columns %}
+                                <td>{{ row[col] }}</td>
+                                {% endfor %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
                 {% endif %}
             </div>
         </div>
-        {% endif %}
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const panels = document.querySelectorAll('.tab-panel');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const tab = this.dataset.tab;
+                    tabButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tab));
+                    panels.forEach(panel => panel.classList.toggle('active', panel.id === `${tab}-panel`));
+                });
+            });
+
+            const form = document.querySelector('#single-predict-form');
+            if (form) {
+                form.addEventListener('reset', function () {
+                    const results = document.querySelector('.results-section');
+                    if (results) {
+                        results.classList.remove('show');
+                        const pred = results.querySelector('.prediction-result');
+                        if (pred) pred.textContent = '';
+                        const risk = results.querySelector('.risk-level');
+                        if (risk) risk.textContent = '';
+                    }
+                });
+            }
+
+            const bulkClearBtn = document.querySelector('#bulk-clear-btn');
+            if (bulkClearBtn) {
+                bulkClearBtn.addEventListener('click', function () {
+                    const bulkForm = document.querySelector('#bulk-predict-form');
+                    if (bulkForm) {
+                        bulkForm.reset();
+                    }
+
+                    const fileInput = document.querySelector('#json_file');
+                    if (fileInput) {
+                        fileInput.value = '';
+                    }
+
+                    const bulkFilename = document.querySelector('.bulk-details strong');
+                    if (bulkFilename) {
+                        bulkFilename.parentElement.remove();
+                    }
+
+                    const errorMessage = document.querySelector('.error-message');
+                    if (errorMessage) {
+                        errorMessage.remove();
+                    }
+
+                    const tableWrapper = document.querySelector('.table-wrapper');
+                    if (tableWrapper) {
+                        tableWrapper.remove();
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>

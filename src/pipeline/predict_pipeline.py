@@ -18,7 +18,17 @@ class PredictPipeline:
             print("Before Loading")
 
             model = load_object(file_path=model_path)
-            preprocessor = load_object(file_path=preprocessor_path)
+
+            # support both correct and legacy filename (typo) for preprocessor
+            if os.path.exists(preprocessor_path):
+                preprocessor = load_object(file_path=preprocessor_path)
+            else:
+                alt_preprocessor_path = os.path.join("artifacts", "proprocessor.pkl")
+                if os.path.exists(alt_preprocessor_path):
+                    preprocessor = load_object(file_path=alt_preprocessor_path)
+                else:
+                    # attempt to load and let utils raise a clear exception
+                    preprocessor = load_object(file_path=preprocessor_path)
 
             print("After Loading")
 
