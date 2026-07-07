@@ -1,9 +1,12 @@
 import os
+import sys
 import json
 
 from flask import Flask, request, render_template
 import pandas as pd
 
+from src.exception import CustomException
+from src.logger import logging
 from src.pipeline.predict_pipeline import CustomData, PredictPipeline
 
 application = Flask(__name__)
@@ -27,14 +30,11 @@ def index():
 # Prediction Route
 @app.route('/predictdata', methods=['GET', 'POST'])
 def predict_datapoint():
-
-    if request.method == "GET":
-        return render_template("home.html", active_tab='predict1')
-
-    else:
+    try:
+        if request.method == "GET":
+            return render_template("home.html", active_tab='predict1')
 
         data = CustomData(
-
             age=float(request.form.get("age")),
             sex=int(request.form.get("sex")),
             cp=int(request.form.get("cp")),
@@ -48,16 +48,12 @@ def predict_datapoint():
             slope=int(request.form.get("slope")),
             ca=int(request.form.get("ca")),
             thal=int(request.form.get("thal"))
-
         )
 
         pred_df = data.get_data_as_data_frame()
-
-        print("Input Data")
-        print(pred_df)
+        logging.info("Input Data:\n%s", pred_df)
 
         predict_pipeline = PredictPipeline()
-
         results = predict_pipeline.predict(pred_df)
 
         return render_template(
@@ -65,6 +61,10 @@ def predict_datapoint():
             active_tab='predict1',
             results=int(results[0])
         )
+
+    except Exception as e:
+        logging.error("Error during single datapoint prediction: %s", str(e))
+        raise CustomException(e, sys)
 
 
 # Bulk prediction route
@@ -89,6 +89,7 @@ def bulk_predict():
         )
 
     try:
+        logging.info("Bulk prediction upload received: %s", file.filename)
         file.seek(0, os.SEEK_END)
         size = file.tell()
         file.seek(0)
@@ -119,6 +120,8 @@ def bulk_predict():
             )
 
         df = df[required_columns].copy()
+        logging.info("Bulk predict DataFrame shape: %s", df.shape)
+
         predict_pipeline = PredictPipeline()
         results = predict_pipeline.predict(df)
 
@@ -147,6 +150,7 @@ def bulk_predict():
             bulk_filename=file.filename
         )
     except Exception as e:
+        logging.error("Unhandled exception during bulk prediction: %s", str(e))
         return render_template(
             'home.html',
             active_tab=active_tab,

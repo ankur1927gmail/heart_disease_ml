@@ -7,4 +7,5 @@ imbalanced-learn
 scikit-learn
 Flask
 dill
+pytest
 #-e .

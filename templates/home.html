@@ -508,8 +508,8 @@
                             <li><strong>slope</strong> — ST slope: 1 = Upsloping, 2 = Flat, 3 = Downsloping</li>
                             <li><strong>ca</strong> — Number of major vessels (0-3) colored by fluoroscopy</li>
                             <li><strong>thal</strong> — Thalassemia: 3 = Normal, 6 = Fixed Defect, 7 = Reversible Defect</li>
-                        </ul>
-                    </div>
+                            <li><strong>Num/Heart disease stage</strong> — 0 = No Heart Disease, 1 = Heart Disease Stage 1, 2 = Heart Disease Stage 2, 3 = Heart Disease Stage 3, 4 = Heart Disease Stage 4</li>
+                        </ul>                    </div>
                     <form id="bulk-predict-form" action="{{ url_for('bulk_predict') }}" method="post" enctype="multipart/form-data">
                         <label for="json_file">Upload JSON file</label>
                         <input type="file" id="json_file" name="json_file" accept="application/json" required>
@@ -540,7 +540,7 @@
                         <thead>
                             <tr>
                                 {% for col in bulk_columns %}
-                                <th>{{ col }}</th>
+                                <th>{{ 'heart disease stage' if col == 'predicted' else col }}</th>
                                 {% endfor %}
                             </tr>
                         </thead>
