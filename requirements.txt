@@ -8,4 +8,4 @@ scikit-learn
 Flask
 dill
 pytest
-#-e .
+-e .
