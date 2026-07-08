@@ -1,10 +1,10 @@
-#ipykernel
+ipykernel
 pandas
 numpy
 seaborn
 matplotlib
 imbalanced-learn
-scikit-learn
+scikit-learn>=1.9.0
 Flask
 dill
 pytest
