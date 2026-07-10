@@ -6,6 +6,7 @@ matplotlib
 imbalanced-learn
 scikit-learn>=1.9.0
 Flask
+prometheus-client
 dill
 pytest
 flake8
