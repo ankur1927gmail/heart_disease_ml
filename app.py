@@ -27,6 +27,11 @@ def index():
     return render_template("home.html", active_tab='predict1')
 
 
+@app.route('/health')
+def health():
+    return {"status": "ok"}, 200
+
+
 # Prediction Route
 @app.route('/predictdata', methods=['GET', 'POST'])
 def predict_datapoint():
@@ -64,7 +69,11 @@ def predict_datapoint():
 
     except Exception as e:
         logging.error("Error during single datapoint prediction: %s", str(e))
-        raise CustomException(e, sys)
+        return render_template(
+            "home.html",
+            active_tab='predict1',
+            single_error='An error occurred during prediction. Please check the entered values and try again.'
+        ), 500
 
 
 # Bulk prediction route
@@ -135,18 +144,18 @@ def bulk_predict():
             bulk_columns=list(df.columns)
         )
 
-    except ValueError as ve:
-        return render_template(
-            'home.html',
-            active_tab=active_tab,
-            bulk_error=str(ve),
-            bulk_filename=file.filename
-        )
     except json.JSONDecodeError:
         return render_template(
             'home.html',
             active_tab=active_tab,
             bulk_error='Invalid JSON format. Please upload a valid JSON file.',
+            bulk_filename=file.filename
+        )
+    except ValueError as ve:
+        return render_template(
+            'home.html',
+            active_tab=active_tab,
+            bulk_error=str(ve),
             bulk_filename=file.filename
         )
     except Exception as e:

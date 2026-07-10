@@ -15,7 +15,7 @@ from src.pipeline.predict_pipeline import CustomData, PredictPipeline
 @pytest.fixture(autouse=True)
 def set_temp_artifacts_dir(tmp_path, monkeypatch):
     artifacts_dir = tmp_path / "artifacts"
-    artifacts_dir.mkdir()
+    artifacts_dir.mkdir(parents=True, exist_ok=True)
     monkeypatch.chdir(tmp_path)
     return artifacts_dir
 
@@ -29,17 +29,21 @@ def build_dummy_preprocessor_and_model(tmp_path):
     import pickle
 
     artifacts_dir = tmp_path / "artifacts"
-    artifacts_dir.mkdir()
+    artifacts_dir.mkdir(parents=True, exist_ok=True)
 
     preprocessor = StandardScaler()
-    train = [[1.0], [2.0], [3.0]]
+    train = [
+        [45.0, 0.0, 2.0, 130.0, 250.0, 0.0, 1.0, 150.0, 0.0, 1.0, 2.0, 0.0, 3.0],
+        [50.0, 1.0, 3.0, 140.0, 240.0, 1.0, 0.0, 160.0, 1.0, 0.8, 2.0, 0.0, 6.0],
+        [55.0, 0.0, 1.0, 135.0, 260.0, 0.0, 1.0, 145.0, 0.0, 1.2, 1.0, 1.0, 7.0],
+    ]
     preprocessor.fit(train)
     with open(artifacts_dir / "preprocessor.pkl", "wb") as f:
         pickle.dump(preprocessor, f)
 
     model = LogisticRegression(max_iter=1000)
-    X = [[0.0], [1.0], [2.0], [3.0]]
-    y = [0, 0, 1, 1]
+    X = train
+    y = [0, 1, 1]
     model.fit(X, y)
     with open(artifacts_dir / "model.pkl", "wb") as f:
         pickle.dump(model, f)

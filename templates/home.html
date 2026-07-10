@@ -465,6 +465,10 @@
                 </form>
             </div>
 
+            {% if single_error %}
+            <div class="error-message">{{ single_error }}</div>
+            {% endif %}
+
             {% if results %}
             <div class="results-section show">
                 <h2>📊 Prediction Result</h2>
