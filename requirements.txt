@@ -8,4 +8,5 @@ scikit-learn>=1.9.0
 Flask
 dill
 pytest
+flake8
 -e .
