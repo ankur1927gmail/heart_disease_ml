@@ -1,12 +1,10 @@
 import io
 import json
-import sys
 
 import pandas as pd
 import pytest
 
 from app import app, allowed_file
-from src.exception import CustomException
 from src.pipeline.predict_pipeline import CustomData, PredictPipeline
 
 
@@ -21,7 +19,8 @@ def set_temp_artifacts_dir(tmp_path, monkeypatch):
 
 
 # Fixture that builds a small dummy preprocessor and model on disk.
-# The PredictPipeline reads these files from artifacts/model.pkl and artifacts/preprocessor.pkl.
+# The PredictPipeline reads these files from artifacts/model.pkl and
+# artifacts/preprocessor.pkl.
 @pytest.fixture()
 def build_dummy_preprocessor_and_model(tmp_path):
     from sklearn.preprocessing import StandardScaler
@@ -33,9 +32,12 @@ def build_dummy_preprocessor_and_model(tmp_path):
 
     preprocessor = StandardScaler()
     train = [
-        [45.0, 0.0, 2.0, 130.0, 250.0, 0.0, 1.0, 150.0, 0.0, 1.0, 2.0, 0.0, 3.0],
-        [50.0, 1.0, 3.0, 140.0, 240.0, 1.0, 0.0, 160.0, 1.0, 0.8, 2.0, 0.0, 6.0],
-        [55.0, 0.0, 1.0, 135.0, 260.0, 0.0, 1.0, 145.0, 0.0, 1.2, 1.0, 1.0, 7.0],
+        [45.0, 0.0, 2.0, 130.0, 250.0, 0.0, 1.0, 150.0, 0.0, 1.0,
+         2.0, 0.0, 3.0],
+        [50.0, 1.0, 3.0, 140.0, 240.0, 1.0, 0.0, 160.0, 1.0, 0.8,
+         2.0, 0.0, 6.0],
+        [55.0, 0.0, 1.0, 135.0, 260.0, 0.0, 1.0, 145.0, 0.0, 1.2,
+         1.0, 1.0, 7.0],
     ]
     preprocessor.fit(train)
     with open(artifacts_dir / "preprocessor.pkl", "wb") as f:
@@ -79,7 +81,8 @@ def test_custom_data_to_dataframe():
 
     assert list(df.columns) == [
         "age", "sex", "cp", "trestbps", "chol", "fbs",
-        "restecg", "thalach", "exang", "oldpeak", "slope", "ca", "thal"
+        "restecg", "thalach", "exang", "oldpeak", "slope",
+        "ca", "thal"
     ]
     assert df.loc[0, "age"] == 55
     assert df.loc[0, "thal"] == 3
@@ -144,8 +147,12 @@ def test_bulk_predict_success(monkeypatch, build_dummy_preprocessor_and_model):
     assert b"bulk.json" in response.data
 
 
-def test_bulk_predict_missing_columns(monkeypatch, build_dummy_preprocessor_and_model):
-    """Ensure bulk prediction returns an error when required fields are missing."""
+def test_bulk_predict_missing_columns(
+    monkeypatch,
+    build_dummy_preprocessor_and_model,
+):
+    """Ensure bulk prediction returns an error when required fields are
+    missing."""
     client = app.test_client()
     payload = [{"age": 50, "sex": 1}]  # missing many required columns
     data = json.dumps(payload).encode("utf-8")
@@ -202,4 +209,7 @@ def test_predict_datapoint_exception(monkeypatch):
     )
 
     assert response.status_code == 500
-    assert b"An error occurred" in response.data or b"Error occured" in response.data
+    assert (
+        b"An error occurred" in response.data
+        or b"Error occured" in response.data
+    )

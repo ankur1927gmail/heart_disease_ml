@@ -1,5 +1,6 @@
 import os
 import sys
+
 import pandas as pd
 
 from src.exception import CustomException
@@ -19,15 +20,16 @@ class PredictPipeline:
 
             model = load_object(file_path=model_path)
 
-            # support both correct and legacy filename (typo) for preprocessor
             if os.path.exists(preprocessor_path):
                 preprocessor = load_object(file_path=preprocessor_path)
             else:
-                alt_preprocessor_path = os.path.join("artifacts", "proprocessor.pkl")
+                alt_preprocessor_path = os.path.join(
+                    "artifacts",
+                    "proprocessor.pkl"
+                )
                 if os.path.exists(alt_preprocessor_path):
                     preprocessor = load_object(file_path=alt_preprocessor_path)
                 else:
-                    # attempt to load and let utils raise a clear exception
                     preprocessor = load_object(file_path=preprocessor_path)
 
             print("After Loading")
@@ -38,7 +40,7 @@ class PredictPipeline:
             return preds
 
         except Exception as e:
-            raise CustomException(e, sys)
+            raise CustomException(e, sys) from e
 
 
 class CustomData:
@@ -58,7 +60,6 @@ class CustomData:
         ca,
         thal,
     ):
-
         self.age = age
         self.sex = sex
         self.cp = cp
@@ -94,4 +95,4 @@ class CustomData:
             return pd.DataFrame(custom_data_input_dict)
 
         except Exception as e:
-            raise CustomException(e, sys)
+            raise CustomException(e, sys) from e

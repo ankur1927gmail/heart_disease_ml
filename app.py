@@ -2,11 +2,15 @@ import json
 import os
 import time
 
-from flask import Flask, Response, g, request, render_template
 import pandas as pd
-from prometheus_client import CONTENT_TYPE_LATEST, Counter, generate_latest, Histogram
+from flask import Flask, Response, g, request, render_template
+from prometheus_client import (
+    CONTENT_TYPE_LATEST,
+    Counter,
+    generate_latest,
+    Histogram,
+)
 
-from src.exception import CustomException
 from src.logger import logging
 from src.pipeline.predict_pipeline import CustomData, PredictPipeline
 
@@ -37,7 +41,11 @@ def after_request(response):
     duration = time.time() - getattr(g, 'start_time', time.time())
     endpoint = request.path
     status = response.status_code
-    REQUEST_COUNT.labels(method=request.method, endpoint=endpoint, http_status=status).inc()
+    REQUEST_COUNT.labels(
+        method=request.method,
+        endpoint=endpoint,
+        http_status=status
+    ).inc()
     REQUEST_LATENCY.labels(endpoint=endpoint).observe(duration)
     logging.info(
         'request=%s path=%s status=%s duration=%.3fs',
@@ -58,7 +66,10 @@ ALLOWED_EXTENSIONS = {'json'}
 
 
 def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+    return (
+        '.' in filename and filename.rsplit('.', 1)[1].lower()
+        in ALLOWED_EXTENSIONS
+    )
 
 
 # Home Page
@@ -112,7 +123,10 @@ def predict_datapoint():
         return render_template(
             "home.html",
             active_tab='predict1',
-            single_error='An error occurred during prediction. Please check the entered values and try again.'
+            single_error=(
+                'An error occurred during prediction. '
+                'Please check the entered values and try again.'
+            )
         ), 500
 
 
@@ -203,11 +217,13 @@ def bulk_predict():
         return render_template(
             'home.html',
             active_tab=active_tab,
-            bulk_error=f'An error occurred during bulk prediction: {str(e)}',
+            bulk_error=(
+                f'An error occurred during bulk prediction: {str(e)}'
+            ),
             bulk_filename=file.filename
         )
 
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
-    app.run(host="0.0.0.0", debug=False,port=port)
+    app.run(host="0.0.0.0", debug=False, port=port)
