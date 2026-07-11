@@ -10,8 +10,8 @@ PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-# These imports are intentionally placed after the path setup so the package
-# can be imported reliably during test execution.
+# These imports are intentionally placed after the path setup so the
+# package can be imported reliably during test execution.
 from app import app, allowed_file  # noqa: E402
 from src.pipeline.predict_pipeline import CustomData, PredictPipeline  # noqa: E402
 
