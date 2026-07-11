@@ -1,15 +1,8 @@
 import json
 import os
-import time
 
 import pandas as pd
-from flask import Flask, Response, g, request, render_template
-from prometheus_client import (
-    CONTENT_TYPE_LATEST,
-    Counter,
-    generate_latest,
-    Histogram,
-)
+from flask import Flask, request, render_template
 
 from src.logger import logging
 from src.pipeline.predict_pipeline import CustomData, PredictPipeline
@@ -18,48 +11,6 @@ application = Flask(__name__)
 application.config['MAX_CONTENT_LENGTH'] = 200 * 1024 * 1024  # 200 MB
 
 app = application
-
-REQUEST_COUNT = Counter(
-    'api_requests_total',
-    'Total number of HTTP requests',
-    ['method', 'endpoint', 'http_status']
-)
-REQUEST_LATENCY = Histogram(
-    'api_request_latency_seconds',
-    'API request latency in seconds',
-    ['endpoint']
-)
-
-
-@app.before_request
-def before_request():
-    g.start_time = time.time()
-
-
-@app.after_request
-def after_request(response):
-    duration = time.time() - getattr(g, 'start_time', time.time())
-    endpoint = request.path
-    status = response.status_code
-    REQUEST_COUNT.labels(
-        method=request.method,
-        endpoint=endpoint,
-        http_status=status
-    ).inc()
-    REQUEST_LATENCY.labels(endpoint=endpoint).observe(duration)
-    logging.info(
-        'request=%s path=%s status=%s duration=%.3fs',
-        request.method,
-        endpoint,
-        status,
-        duration
-    )
-    return response
-
-
-@app.route('/metrics')
-def metrics():
-    return Response(generate_latest(), mimetype=CONTENT_TYPE_LATEST)
 
 
 ALLOWED_EXTENSIONS = {'json'}
