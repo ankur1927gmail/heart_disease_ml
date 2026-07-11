@@ -9,4 +9,5 @@ Flask
 dill
 pytest
 flake8
+gunicorn
 -e .

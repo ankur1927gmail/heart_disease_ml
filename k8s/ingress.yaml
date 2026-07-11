@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: heart-disease-mlops
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - host: heart-disease.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: heart-disease-mlops
+                port:
+                  number: 80

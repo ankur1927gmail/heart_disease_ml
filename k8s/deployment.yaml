@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: heart-disease-analysis
+  labels:
+    app: heart-disease-analysis
+    project: HeartDiseaseAnalysis
+    version: "1.0.0"
+    owner: Ankur Sharma
+    environment: Production
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: heart-disease-analysis
+  template:
+    metadata:
+      labels:
+        app: heart-disease-analysis
+    spec:
+      containers:
+        - name: heart-disease-analysis
+          image: testdockerankur.azurecr.io/heart-disease-analysis:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+          command:
+            - gunicorn
+            - --bind
+            - 0.0.0.0:8000
+            - app:app
+          env:
+            - name: PORT
+              value: "8000"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 20
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 250m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: heart-disease-analysis
+  labels:
+    app: heart-disease-analysis
+spec:
+  type: LoadBalancer
+  selector:
+    app: heart-disease-analysis
+  ports:
+    - port: 80
+      targetPort: 8000
+      protocol: TCP
